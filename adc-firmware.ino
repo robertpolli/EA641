@@ -24,6 +24,11 @@ void writeValue(int value){
 
 
 void loop() {
+
+  digitalWrite(SH, HIGH);    //Sample
+  delayMicroseconds(10);
+  digitalWrite(SH, LOW);     //Hold
+  
   digitalWrite(START, HIGH); //Start of conversion
   digitalWrite(EOC, LOW);
 
@@ -44,5 +49,5 @@ void loop() {
   
   digitalWrite(EOC, HIGH);  //End of conversion
   digitalWrite(START, LOW);
-  delayMicroseconds(100); 
+  //delayMicroseconds(100); 
 }
