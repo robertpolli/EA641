@@ -49,5 +49,13 @@ void loop() {
   
   digitalWrite(EOC, HIGH);  //End of conversion
   digitalWrite(START, LOW);
-  //delayMicroseconds(100); 
+
+  Serial.begin(9600);
+  delay(500);
+  Serial.println(valueTry);
+  delay(500);
+  Serial.end();
+  delay(500);
+  DDRD = 0xFF;       // Config PORT D as output
+  delay(1000);
 }
