@@ -1,9 +1,13 @@
-void setup() {
 
-  int OC = 8;
-  int SH = 9;
-  int EOC = 10;
-  int START = 11; 
+int OC = 8;
+int SH = 9;
+int EOC = 10;
+int START = 11;
+
+int samples = 100; 
+float resolution = 5/255;
+  
+void setup() { 
 
   pinMode(OC, INPUT);  // Output Control - OC
 
@@ -13,8 +17,6 @@ void setup() {
 
   DDRD = 0xFF;       // Config PORT D as output
 
-  int samples = 100; 
-  float resolution = 5/255;
 }
 
 void writeValue(int value){
@@ -26,8 +28,8 @@ void writeValue(int value){
 
 void loop() {
 
-  int valuesDEC[samples];
-  float valuesVOLTS[samples];
+  char valuesDEC[samples];
+  char valuesVOLTS[samples];
 
   digitalWrite(SH, HIGH);    //Sample
   delayMicroseconds(10);
@@ -36,7 +38,7 @@ void loop() {
   digitalWrite(START, HIGH); //Start of conversion
   digitalWrite(EOC, LOW);
 
-  for(int strikes = 0; strikes < samples, strikes++){
+  for(int strikes = 0; strikes < samples; strikes++){
 
     int bitLocation = 6;
     int valueCompare = 0b10000000;
@@ -63,10 +65,13 @@ void loop() {
   if(samples == 100){
 
     Serial.begin(9600);
+    while (!Serial) {;}    
+    
     Serial.println(valuesDEC);
     Serial.println(valuesVOLTS);
     Serial.end();
-    delay(500);
+    
+    while (Serial) {;}
     DDRD = 0xFF;       // Config PORT D as output
     delay(500);
   }
