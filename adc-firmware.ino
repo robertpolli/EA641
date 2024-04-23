@@ -70,9 +70,4 @@ void loop() {
     DDRD = 0xFF;       // Config PORT D as output
     delay(500);
   }
-
-  else{
-    // To be decided
-  }
-  
 }
