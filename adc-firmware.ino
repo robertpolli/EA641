@@ -1,9 +1,9 @@
 void setup() {
 
-  int OC = 1;
-  int SH = 2;
-  int EOC = 3;
-  int START = 4; 
+  int OC = 8;
+  int SH = 9;
+  int EOC = 10;
+  int START = 11; 
 
   pinMode(OC, INPUT);  // Output Control - OC
 
@@ -12,8 +12,9 @@ void setup() {
   pinMode(START, OUTPUT); // Start of conversion
 
   DDRD = 0xFF;       // Config PORT D as output
-  
 
+  int samples = 100; 
+  float resolution = 5/255;
 }
 
 void writeValue(int value){
@@ -25,6 +26,9 @@ void writeValue(int value){
 
 void loop() {
 
+  int valuesDEC[samples];
+  float valuesVOLTS[samples];
+
   digitalWrite(SH, HIGH);    //Sample
   delayMicroseconds(10);
   digitalWrite(SH, LOW);     //Hold
@@ -32,30 +36,43 @@ void loop() {
   digitalWrite(START, HIGH); //Start of conversion
   digitalWrite(EOC, LOW);
 
-  int bitLocation = 6;
-  int valueTry = 0b10000000;
+  for(int strikes = 0; strikes < samples, strikes++){
 
-  while(bitLocation >= 0){
+    int bitLocation = 6;
+    int valueCompare = 0b10000000;
 
-    writeValue(valueTry);
+    while(bitLocation >= 0){
+
+      writeValue(valueCompare);
     
-    if(digitalRead(OC)){valueTry |= 1 << bitLocation;}
-    else{
-      valueTry &= ~(1 << bitLocation+1);
-      valueTry |= 1 << (bitLocation);
+      if(digitalRead(OC)){valueCompare |= 1 << bitLocation;}
+      else{
+        valueCompare &= ~(1 << bitLocation+1);
+        valueCompare |= 1 << (bitLocation);
+      }
+      bitLocation -= 1; 
     }
-    bitLocation -= 1; 
+    valuesDEC[strikes] = valueCompare;
+    valuesVOLTS[strikes] = valueCompare * resolution;
   }
-  
+    
   digitalWrite(EOC, HIGH);  //End of conversion
   digitalWrite(START, LOW);
 
-  Serial.begin(9600);
-  delay(500);
-  Serial.println(valueTry);
-  delay(500);
-  Serial.end();
-  delay(500);
-  DDRD = 0xFF;       // Config PORT D as output
-  delay(1000);
+
+  if(samples == 100){
+
+    Serial.begin(9600);
+    Serial.println(valuesDEC);
+    Serial.println(valuesVOLTS);
+    Serial.end();
+    delay(500);
+    DDRD = 0xFF;       // Config PORT D as output
+    delay(500);
+  }
+
+  else{
+    // To be decided
+  }
+  
 }
