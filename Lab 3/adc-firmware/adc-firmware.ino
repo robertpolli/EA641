@@ -3,11 +3,11 @@ int SH = 9;
 int EOC = 10;
 int START = 11;
 
-int samples = 100; 
+const int samples = 5; 
 float resolution = 0.01960784313; // 5/255
 
-char valuesDEC[samples];
-char valuesVOLTS[samples];
+int valuesDEC[samples];
+float valuesVOLTS[samples];
 
 void setup() { 
 
@@ -37,6 +37,7 @@ void conv(void){
     while(bitLocation >= 0){
 
       writeValue(valueCompare);
+      delay(5);
     
       if(digitalRead(OC)){valueCompare |= 1 << bitLocation;}
       else{
@@ -50,26 +51,29 @@ void conv(void){
   }
 }
 
-void print(void){
+void printVal(void){
 
-    Serial.begin(9600);
+    Serial.begin(19200);
     while (!Serial) {;}    
-    
-    Serial.println(valuesDEC);
-    Serial.println(valuesVOLTS);
+
+    for(int i=0; i < samples; i++){
+      Serial.print(String(valuesDEC[i]) + ";");
+      //Serial.println(String(valuesVOLTS[i]) + ";");  
+    }
+    Serial.print("\n");
     Serial.end();
     
-    while (Serial) {;}
     DDRD = 0xFF;       // Config PORT D as output
-    delay(500);
+    //delay(500);
 
 }
 
 void loop() {
 
   digitalWrite(SH, HIGH);    //Sample
-  delayMicroseconds(10);
+  delayMicroseconds(100);
   digitalWrite(SH, LOW);     //Hold
+  delayMicroseconds(100);
   
   digitalWrite(START, HIGH); //Start of conversion
   digitalWrite(EOC, LOW);
@@ -79,5 +83,5 @@ void loop() {
   digitalWrite(EOC, HIGH);  //End of conversion
   digitalWrite(START, LOW);
 
-  print();
+  printVal();
 }
