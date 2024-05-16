@@ -1,0 +1,19 @@
+LM324 - 1:
+
+Preto - Terra
+Vermelho - +Vcc
+Marrom - -Vdd
+
+
+LF398:
+
+Amarelo - Analog IN
+Roxo Pino 5 - Output
+Roxo Pino 8 - Digital Control
+
+
+LM324 - 2:
+
+Branco - Output
+Roxo - +5V
+
