@@ -5,6 +5,7 @@ extern "C"
 {
   void start();
   void writeValue(int val);
+  unsigned int readOC();
   void sampleHold();
   void startConv();
   void endConv();
@@ -15,7 +16,7 @@ int SH = 9;
 int EOC = 10;
 int START = 11;
 
-const int samples = 5; 
+const int samples = 1; 
 float resolution = 0.01960784313; // 5/255
 
 int valuesDEC[samples];
@@ -38,15 +39,16 @@ void setup()
 void conv(void){
 
   for(int strikes = 0; strikes < samples; strikes++){
-
+    
     int valueCompare = 0b10000000;
 
-    for(int bitLocation = 6; bitLocation >= 0; bitLocation--){
+    for(int bitLocation = 6; bitLocation >= 0; bitLocation --){
 
       writeValue(valueCompare);
-      delay(5);
+
+      unsigned int outControl = readOC() & 0x01; 
     
-      if(digitalRead(OC)){valueCompare |= 1 << bitLocation;}
+      if(outControl){valueCompare |= 1 << bitLocation;}
       else{
         valueCompare &= ~(1 << bitLocation+1);
         valueCompare |= 1 << (bitLocation);
@@ -71,7 +73,7 @@ void printVal(void){
     Serial.end();
     
     DDRD = 0xFF;       // Config PORT D as output
-    //delay(500);
+    delay(500);
 
 }
 
@@ -82,7 +84,7 @@ void loop()
   startConv();
   conv();
   endConv();
-
+  
   printVal();
 
 }
