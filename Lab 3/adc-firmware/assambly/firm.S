@@ -15,14 +15,18 @@
 ;---------------------------------------------------------------------------
 
 start:
-
+    CBI   DDRB, 0
+    SBI   DDRB, 1
+    SBI   DDRB, 2
+    SBI   DDRB, 3
+    
     RET                       ;return to setup() function
 ;---------------------------------------------------------------------------
 
 writeValue:
   OUT  PORTD, r24             ; Write value to port D
 
-  LDI   r30, 0xe7
+  LDI   r30, 0xea
   CLR   r31
   
 valWritten:
@@ -56,34 +60,43 @@ retSample:
 ;---------------------------------------------------------------------------
 
 converter:
-  LDI r24, 0x80            ; Armazena 0b10000000 
-  LDI r26, 0x06             ; Armazena a posicao do bit de comparacao
-  .equ POSITION, 6       ; ''  ''  ''  ''
+
+  LDI r24, 0x80             ; Armazena 0b10000000 
+  LDI r26, 0x07             ; Armazena a posicao do bit de comparacao
+  LDI r20, 0x40
+
+  CLR   r31
   
 forLoop:
-  ;JMP writeValue            ; Escreve r24 na saida 
 
+  CALL writeValue              ; Escreve r24 na saida 
 
-  OUT  PORTD, r24             ; Write value to port D
-
-
+  IN r28, PINB 
+  ANDI r28, 0x01               ; Isola apenas o bit 0 do registrador
   
+  ;; ---- IF ----
+  SBRC r28, 0                  ; SE OC=1
+  OR r24, r20                  ; Set o bit na posição POSITION  
+  ;; ------------
 
-  IN r30, PINB
-  ANDI r30,0x01             ; Isola apenas o bit 0 do registrador
+  CPSE r28, r31 
+  JMP retLoop
+  ;; ---- ELSE ----
+  LSL r20
   
-  SBRC r30, 0               ; SE OC=1
-  SBR r24, 1 << (POSITION)         ; Set o bit na posição POSITION  
-
-  CPI r30, 0x00 
-  BRNE 2                    ; ELSE
-  CBR r24, 1 << (POSITION + 1)     ;  
-  SBR r24, 1 << (POSITION)         ;
-
-  .equ POSITION, (POSITION - 1)
+  MOVW r22, r20
+  NEG r22
+  DEC r22 
+  AND r24,r22
+ 
+  LSR r20
+  OR r24, r20
+  ;; -------------- 
+retLoop:
+  LSR r20        
   
-  SUBI  r26, 0x01                 ; Decrementa o Bit Location
-  BREQ 0            ; Sai d o looping
+  DEC  r26                  ; Decrementa o Bit Location
+  CPSE r26, r31            ; Sai d o looping
   JMP   forLoop
 
   RET
