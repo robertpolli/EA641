@@ -37,8 +37,6 @@ void setup()
 //----------------------------------------------------
 
 void conv(void){
-
-  for(int strikes = 0; strikes < samples; strikes++){
     
     int valueCompare = 0b10000000;
 
@@ -54,9 +52,7 @@ void conv(void){
         valueCompare |= 1 << (bitLocation);
       }
     }
-    valuesDEC[strikes] = valueCompare;
-    valuesVOLTS[strikes] = valueCompare * resolution;
-  }
+    return(valueCompare);
 }
 //----------------------------------------------------
 
@@ -82,7 +78,13 @@ void loop()
   sampleHold();
   
   startConv();
-  conv();
+
+  for(int strikes = 0; strikes < samples; strikes++){
+    int value = conv();
+    
+    valuesDEC[strikes] = value;
+    valuesVOLTS[strikes] = value * resolution;
+  }
   endConv();
   
   printVal();
