@@ -15,10 +15,10 @@
 ;---------------------------------------------------------------------------
 
 start:
-    CBI   DDRB, 0
-    SBI   DDRB, 1
-    SBI   DDRB, 2
-    SBI   DDRB, 3
+    CBI   DDRB, 0            ; Input - OC
+    SBI   DDRB, 1            ; Output - SH
+    SBI   DDRB, 2            ; Output - EOC
+    SBI   DDRB, 3            ; Output - START
     
     RET                       ;return to setup() function
 ;---------------------------------------------------------------------------
@@ -26,13 +26,13 @@ start:
 writeValue:
   OUT  PORTD, r24             ; Write value to port D
 
-  LDI   r30, 0xea
-  CLR   r31
-  
-valWritten:
-  DEC   r30
-  CPSE  r30, r31
-  JMP   valWritten
+  LDI   r30, 0xea             ;
+  CLR   r31                   ;
+                              ;
+valWritten:                   ;
+  DEC   r30                   ;
+  CPSE  r30, r31              ;
+  JMP   valWritten            ; Delay
     
   RET
 
@@ -52,7 +52,7 @@ sampleHold:
 retSample:
   DEC   r30
   CPSE  r30, r31
-  JMP   retSample
+  JMP   retSample           ; Delay
   
   CBI   PORTB, 1            ; Hold
   
@@ -62,8 +62,8 @@ retSample:
 converter:
 
   LDI r24, 0x80             ; Armazena 0b10000000 
-  LDI r26, 0x07             ; Armazena a posicao do bit de comparacao
-  LDI r20, 0x40
+  LDI r26, 0x07             ; Armazena o numero de interacoes do looping
+  LDI r20, 0x40             ; Armazena o bit de step
 
   CLR   r31
   
@@ -76,7 +76,7 @@ forLoop:
   
   ;; ---- IF ----
   SBRC r28, 0                  ; SE OC=1
-  OR r24, r20                  ; Set o bit na posição POSITION  
+  OR r24, r20                  ; Set o bit na posição apontada por r20  
   ;; ------------
 
   CPSE r28, r31 
@@ -96,7 +96,7 @@ retLoop:
   LSR r20        
   
   DEC  r26                  ; Decrementa o Bit Location
-  CPSE r26, r31            ; Sai d o looping
+  CPSE r26, r31             ; Sai d o looping
   JMP   forLoop
 
   RET
