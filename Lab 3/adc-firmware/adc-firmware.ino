@@ -27,9 +27,7 @@ void writeValue(int value){
   
 }
 
-void conv(void){
-
-  for(int strikes = 0; strikes < samples; strikes++){
+int conv(void){
 
     int bitLocation = 6;
     int valueCompare = 0b10000000;
@@ -46,9 +44,7 @@ void conv(void){
       }
       bitLocation -= 1; 
     }
-    valuesDEC[strikes] = valueCompare;
-    valuesVOLTS[strikes] = valueCompare * resolution;
-  }
+  return(valueCompare);
 }
 
 void printVal(void){
@@ -78,7 +74,12 @@ void loop() {
   digitalWrite(START, HIGH); //Start of conversion
   digitalWrite(EOC, LOW);
 
-  conv();  
+  for(int strikes = 0; strikes < samples; strikes++){
+    int value = conv();
+
+    valuesDEC[strikes] = value;
+    valuesVOLTS[strikes] = value * resolution;
+  }  
     
   digitalWrite(EOC, HIGH);  //End of conversion
   digitalWrite(START, LOW);
