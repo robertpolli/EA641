@@ -12,15 +12,16 @@ extern "C"
   void endConv();
 }
 
-int OC = 8;
-int SH = 9;
-int EOC = 10;
-int START = 11;
+//  PIN 8 - OC
+//  PIN 9 - SH
+//  PIN 10 - EOC
+//  PIN 11 - START
 
 const int samples = 1; 
 float resolution = 0.01960784313; // 5/255
 
 int valuesDEC[samples];
+float valuesVOLTS[samples];
 //----------------------------------------------------
 void setup()
 {
@@ -32,16 +33,25 @@ void setup()
 void loop()
 {
   startConv();
-  sampleHold();
+
+  for(int strikes = 0; strikes < samples; strikes++){
+    sampleHold();
   
-  unsigned int value = converter();
+    unsigned int value = converter();
+    
+    valuesDEC[strikes] = value;
+    valuesVOLTS[strikes] = value * resolution;
+  }
   endConv();
 
   Serial.begin(19200);
   while (!Serial) {;}
 
-  Serial.print(String(value));
-
+  for(int i=0; i < samples; i++){
+      Serial.print(String(valuesDEC[i]) + ";");
+      //Serial.println(String(valuesVOLTS[i]) + ";");  
+  }
+  
   Serial.print("\n");
   Serial.end(); 
   delay(500);
