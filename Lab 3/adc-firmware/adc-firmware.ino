@@ -32,7 +32,7 @@ int conv(void){
     int bitLocation = 6;
     int valueCompare = 0b10000000;
 
-    while(bitLocation >= 0){
+    for(int bitLocation = 6; bitLocation >= 0; bitLocation --){
 
       writeValue(valueCompare);
       delay(5);
@@ -42,7 +42,6 @@ int conv(void){
         valueCompare &= ~(1 << bitLocation+1);
         valueCompare |= 1 << (bitLocation);
       }
-      bitLocation -= 1; 
     }
   return(valueCompare);
 }
