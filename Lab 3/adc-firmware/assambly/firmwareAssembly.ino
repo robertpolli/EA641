@@ -21,7 +21,6 @@ const int samples = 1;
 float resolution = 0.01960784313; // 5/255
 
 int valuesDEC[samples];
-float valuesVOLTS[samples];
 //----------------------------------------------------
 void setup()
 {
@@ -36,11 +35,12 @@ void loop()
 
   for(int strikes = 0; strikes < samples; strikes++){
     sampleHold();
+    
+    delayMicroseconds(5);
   
     unsigned int value = converter();
     
     valuesDEC[strikes] = value;
-    valuesVOLTS[strikes] = value * resolution;
   }
   endConv();
 
@@ -49,7 +49,10 @@ void loop()
 
   for(int i=0; i < samples; i++){
       Serial.print(String(valuesDEC[i]) + ";");
-      //Serial.println(String(valuesVOLTS[i]) + ";");  
+  }
+  Serial.print("\n");
+  for(int i=0; i < samples; i++){
+      Serial.println(String(valuesDEC[i]*resolution) + ";");  
   }
   
   Serial.print("\n");
