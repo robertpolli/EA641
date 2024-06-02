@@ -16,7 +16,7 @@ int SH = 9;
 int EOC = 10;
 int START = 11;
 
-const int samples = 1; 
+const int samples = 600; 
 float resolution = 0.01960784313; // 5/255
 
 int valuesDEC[samples];
@@ -36,7 +36,7 @@ void setup()
 }
 //----------------------------------------------------
 
-void conv(void){
+int conv(void){
     
     int valueCompare = 0b10000000;
 
@@ -56,37 +56,30 @@ void conv(void){
 }
 //----------------------------------------------------
 
-void printVal(void){
-
-    Serial.begin(19200);
-    while (!Serial) {;}    
+void printVal(void){   
 
     for(int i=0; i < samples; i++){
-      Serial.print(String(valuesDEC[i]) + ";");
-      //Serial.println(String(valuesVOLTS[i]) + ";");  
+      writeValue(valuesDEC[i]);
+      delayMicroseconds(535);
     }
-    Serial.print("\n");
-    Serial.end();
     
     DDRD = 0xFF;       // Config PORT D as output
-    delay(500);
-
 }
 
 void loop()
 {
-  sampleHold();
   
   startConv();
 
   for(int strikes = 0; strikes < samples; strikes++){
+    sampleHold();
     int value = conv();
     
     valuesDEC[strikes] = value;
-    valuesVOLTS[strikes] = value * resolution;
   }
   endConv();
   
   printVal();
 
+  delay(500);
 }
